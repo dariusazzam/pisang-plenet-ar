@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Pisang Plenet AR</title> <!-- Ini tetap buat judul tab browser -->
+    <title>Pisang Plenet AR</title>
     <script src="aframe.min.js"></script>
     <script src="mindar-image.prod.js"></script>
     <script src="mindar-image-aframe.prod.js"></script>
@@ -32,15 +32,46 @@
       #info-text {
         top: 45px;
       }
+
+      /* Loading Spinner Animation */
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
     </style>
   </head>
   <body>
-    <!-- BONUS: Judul AR muncul di layar -->
-    <div id="title-text" class="overlay-box">Pisang Plenet AR 🍌</div>
 
-    <!-- BONUS: Info pengguna -->
-    <div id="info-text" class="overlay-box">📸 Izinkan kamera dan arahkan ke marker</div>
+    <!-- 🔄 Loading Screen -->
+    <div id="loading-screen" style="
+      position: fixed;
+      z-index: 100;
+      width: 100vw;
+      height: 100vh;
+      background: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: sans-serif;
+      font-size: 16px;">
+      
+      <div style="margin-bottom: 12px;">🔄 Memuat Pisang Plenet AR...</div>
+      <div class="spinner" style="
+        width: 40px;
+        height: 40px;
+        border: 5px solid #ccc;
+        border-top: 5px solid #4CAF50;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;">
+      </div>
+    </div>
 
+    <!-- 🍌 Judul & Info -->
+    <div id="title-text" class="overlay-box">Pisang Plenet AR Pak Yuli🍌</div>
+    <div id="info-text" class="overlay-box">📸 Izinkan kamera dan arahkan ke marker!</div>
+
+    <!-- 🔍 AR Scene -->
     <div id="ar-view">
       <a-scene mindar-image="imageTargetSrc: targets.mind;" 
                embedded 
@@ -53,23 +84,35 @@
           <a-asset-item id="model" src="model.glb"></a-asset-item>
         </a-assets>
 
-        <!-- BONUS Lighting -->
+        <!-- Lighting -->
         <a-entity light="type: ambient; intensity: 0.7"></a-entity>
         <a-entity light="type: directional; intensity: 0.6" position="1 2 0" shadow></a-entity>
 
+        <!-- Kamera -->
         <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
+        <!-- Objek 3D -->
         <a-entity mindar-image-target="targetIndex: 0">
           <a-gltf-model 
             src="#model" 
             position="0 0 0" 
             rotation="90 0 0" 
             scale="0.3 0.3 0.3"
-            shadow="cast: true; receive: true">
+            shadow="cast: true; receive: true"
+            animation="property: rotation; to: 90 360 0; loop: true; dur: 6000; easing: linear">
           </a-gltf-model>
         </a-entity>
 
       </a-scene>
     </div>
+
+    <!-- 📜 Script buat hilangkan loading setelah model siap -->
+    <script>
+      const model = document.querySelector('#model');
+      model.addEventListener('loaded', () => {
+        document.getElementById('loading-screen').style.display = 'none';
+      });
+    </script>
+    
   </body>
 </html>
